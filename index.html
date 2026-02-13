@@ -133,44 +133,37 @@
 </div>
 
 <div class="cute-page" id="cutePage">
-    <h2>STOP I KNEW IT 😭💗</h2>
-    <p>We are now legally bound by bestie law.</p>
-    <p>Certified emotional support duo forever.</p>
-    <p>There is no unsubscribe button.</p>
+    <h2>STOP I KNEW IT 😭💗 (everyone act surprised wowww) </h2>
+    <p>We are now legally bound.</p>
+    <p>you're stuck. now HHEHEHEHEEH HAPPY GALENTINES <3</p>
     <div style="font-size:2rem; margin-top:20px;">💖 💕 💗 💞 💓</div>
 </div>
 
 <script>
     const noButton = document.getElementById("noButton");
+    const container = document.getElementById("mainPage");
 
     noButton.addEventListener("mouseover", function() {
-        const x = Math.random() * (window.innerWidth - 100);
-        const y = Math.random() * (window.innerHeight - 50);
-        noButton.style.left = x + "px";
-        noButton.style.top = y + "px";
+        const containerRect = container.getBoundingClientRect();
+
+        const buttonWidth = noButton.offsetWidth;
+        const buttonHeight = noButton.offsetHeight;
+
+        const maxX = containerRect.width - buttonWidth;
+        const maxY = containerRect.height - buttonHeight;
+
+        const randomX = Math.random() * maxX;
+        const randomY = Math.random() * maxY;
+
+        noButton.style.position = "absolute";
+        noButton.style.left = randomX + "px";
+        noButton.style.top = randomY + "px";
     });
 
     function showCutePage() {
         document.getElementById("mainPage").style.display = "none";
         document.getElementById("cutePage").style.display = "flex";
     }
-
-    // Generate floating hearts
-    function createHeart() {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
-        heart.innerHTML = "💗";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
-        heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
-        document.body.appendChild(heart);
-
-        setTimeout(() => {
-            heart.remove();
-        }, 6000);
-    }
-
-    setInterval(createHeart, 300);
 </script>
 
 </body>
