@@ -155,7 +155,6 @@
         const randomX = Math.random() * maxX;
         const randomY = Math.random() * maxY;
 
-        noButton.style.position = "absolute";
         noButton.style.left = randomX + "px";
         noButton.style.top = randomY + "px";
     });
@@ -163,6 +162,72 @@
     function showCutePage() {
         document.getElementById("mainPage").style.display = "none";
         document.getElementById("cutePage").style.display = "flex";
+        startGame();
+    }
+
+    // 💖 GAME LOGIC
+    let score = 0;
+    let timeLeft = 15;
+    let gameInterval;
+    let timerInterval;
+
+    function startGame() {
+        const scoreDisplay = document.createElement("h3");
+        scoreDisplay.id = "score";
+        scoreDisplay.innerText = "Score: 0 💖";
+        document.getElementById("cutePage").appendChild(scoreDisplay);
+
+        const timerDisplay = document.createElement("h3");
+        timerDisplay.id = "timer";
+        timerDisplay.innerText = "Time: 15s ⏳";
+        document.getElementById("cutePage").appendChild(timerDisplay);
+
+        gameInterval = setInterval(createFallingHeart, 500);
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function createFallingHeart() {
+        const heart = document.createElement("div");
+        heart.innerHTML = "💗";
+        heart.style.position = "absolute";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = "-50px";
+        heart.style.fontSize = "30px";
+        heart.style.cursor = "pointer";
+        heart.style.transition = "top 3s linear";
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.style.top = window.innerHeight + "px";
+        }, 50);
+
+        heart.addEventListener("click", function() {
+            score++;
+            document.getElementById("score").innerText = "Score: " + score + " 💖";
+            heart.remove();
+        });
+
+        setTimeout(() => {
+            heart.remove();
+        }, 3000);
+    }
+
+    function updateTimer() {
+        timeLeft--;
+        document.getElementById("timer").innerText = "Time: " + timeLeft + "s ⏳";
+
+        if (timeLeft <= 0) {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+            endGame();
+        }
+    }
+
+    function endGame() {
+        const result = document.createElement("h2");
+        result.innerText = "Final Score: " + score + " 💕 Lia officially wins Galentine supremacy.";
+        document.getElementById("cutePage").appendChild(result);
     }
 </script>
 
