@@ -2,7 +2,13 @@
 <html>
 <head>
     <title>Lia 💕</title>
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -19,7 +25,7 @@
             align-items: center;
             background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
             background-size: 400% 400%;
-            animation: gradientMove 10s ease infinite;
+            animation: gradientMove 12s ease infinite;
         }
 
         @keyframes gradientMove {
@@ -37,6 +43,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             color: white;
             position: relative;
+            overflow: hidden;
         }
 
         h1 {
@@ -53,7 +60,6 @@
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .yes {
@@ -74,25 +80,6 @@
             position: absolute;
         }
 
-        /* Floating hearts */
-        .heart {
-            position: absolute;
-            color: rgba(255,255,255,0.7);
-            animation: float 6s linear infinite;
-        }
-
-        @keyframes float {
-            from {
-                transform: translateY(100vh) scale(1);
-                opacity: 1;
-            }
-            to {
-                transform: translateY(-10vh) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        /* Cute Page */
         .cute-page {
             display: none;
             height: 100vh;
@@ -103,12 +90,6 @@
             flex-direction: column;
             text-align: center;
             color: white;
-            animation: fadeIn 1s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .cute-page h2 {
@@ -117,10 +98,11 @@
             margin-bottom: 20px;
         }
 
-        .cute-page p {
+        #score, #timer, #bonus {
+            margin-top: 10px;
             font-size: 1.2rem;
-            margin-bottom: 10px;
         }
+
     </style>
 </head>
 
@@ -133,19 +115,18 @@
 </div>
 
 <div class="cute-page" id="cutePage">
-    <h2>STOP I KNEW IT 😭💗 (everyone act surprised wowww) </h2>
-    <p>We are now legally bound.</p>
-    <p>you're stuck. now HHEHEHEHEEH HAPPY GALENTINES <3</p>
-    <div style="font-size:2rem; margin-top:20px;">💖 💕 💗 💞 💓</div>
+    <h2>STOP I KNEW IT 😭💗 ACT SURPRISEDDD </h2>
+    <p>Game starts now. Prove your Galentine supremacy.</p>
 </div>
 
 <script>
+
     const noButton = document.getElementById("noButton");
     const container = document.getElementById("mainPage");
 
+    // NO button movement (stays inside card)
     noButton.addEventListener("mouseover", function() {
         const containerRect = container.getBoundingClientRect();
-
         const buttonWidth = noButton.offsetWidth;
         const buttonHeight = noButton.offsetHeight;
 
@@ -165,25 +146,34 @@
         startGame();
     }
 
-    // 💖 GAME LOGIC
+    // GAME VARIABLES
     let score = 0;
-    let timeLeft = 15;
+    let timeLeft = 20;
+    let multiplier = 1;
     let gameInterval;
     let timerInterval;
 
     function startGame() {
-        const scoreDisplay = document.createElement("h3");
+
+        const scoreDisplay = document.createElement("div");
         scoreDisplay.id = "score";
         scoreDisplay.innerText = "Score: 0 💖";
-        document.getElementById("cutePage").appendChild(scoreDisplay);
+        cutePage.appendChild(scoreDisplay);
 
-        const timerDisplay = document.createElement("h3");
+        const timerDisplay = document.createElement("div");
         timerDisplay.id = "timer";
-        timerDisplay.innerText = "Time: 15s ⏳";
-        document.getElementById("cutePage").appendChild(timerDisplay);
+        timerDisplay.innerText = "Time: 20s ⏳";
+        cutePage.appendChild(timerDisplay);
 
-        gameInterval = setInterval(createFallingHeart, 500);
+        const bonusDisplay = document.createElement("div");
+        bonusDisplay.id = "bonus";
+        bonusDisplay.innerText = "Best Friend Multiplier: x1";
+        cutePage.appendChild(bonusDisplay);
+
+        gameInterval = setInterval(createFallingHeart, 400);
         timerInterval = setInterval(updateTimer, 1000);
+
+        setTimeout(activateBonus, 8000);
     }
 
     function createFallingHeart() {
@@ -203,9 +193,10 @@
         }, 50);
 
         heart.addEventListener("click", function() {
-            score++;
+            score += multiplier;
             document.getElementById("score").innerText = "Score: " + score + " 💖";
             heart.remove();
+            playPopSound();
         });
 
         setTimeout(() => {
@@ -224,11 +215,44 @@
         }
     }
 
-    function endGame() {
-        const result = document.createElement("h2");
-        result.innerText = "Final Score: " + score + " 💕 Lia officially wins Galentine supremacy.";
-        document.getElementById("cutePage").appendChild(result);
+    function activateBonus() {
+        multiplier = 2;
+        document.getElementById("bonus").innerText = "Best Friend Advantage Activated 💅 x2";
+        launchConfetti();
     }
+
+    function endGame() {
+        launchConfetti();
+
+        const result = document.createElement("h2");
+        result.innerText = "Final Score: " + score + " 💕";
+
+        const leaderboard = document.createElement("div");
+        leaderboard.innerHTML = `
+            <h3 style="margin-top:20px;">🏆 Galentine Leaderboard</h3>
+            <p>1️⃣ Lia - ${score} 💖</p>
+            <p>2️⃣ Boyfriend - 3 💀</p>
+            <p>3️⃣ Everyone Else - irrelevant</p>
+        `;
+
+        cutePage.appendChild(result);
+        cutePage.appendChild(leaderboard);
+    }
+
+    function launchConfetti() {
+        confetti({
+            particleCount: 200,
+            spread: 120,
+            origin: { y: 0.6 }
+        });
+    }
+
+    function playPopSound() {
+        const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+        audio.volume = 0.2;
+        audio.play();
+    }
+
 </script>
 
 </body>
